@@ -628,10 +628,11 @@ def _golden_function_round(input_tensor_a, decimals=None, *args, **kwargs):
 ttnn.attach_golden_function(ttnn.round, golden_function=_golden_function_round)
 
 
-def _golden_function_selu(input_tensor_a, *args, **kwargs):
+def _golden_function_selu(input_tensor_a, scale=1.0507009873554805, alpha=1.6732632423543772, *args, **kwargs):
     import torch
 
-    return torch.nn.functional.selu(input_tensor_a)
+    scale_alpha = scale * alpha
+    return torch.where(input_tensor_a >= 0.0, input_tensor_a * scale, scale_alpha * torch.expm1(input_tensor_a))
 
 
 ttnn.attach_golden_function(ttnn.selu, golden_function=_golden_function_selu)
